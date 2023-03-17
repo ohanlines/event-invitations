@@ -11,7 +11,6 @@
                  [org.slf4j/slf4j-simple "1.7.28"]
                  [com.stuartsierra/component.repl "0.2.0"]
                  [hiccup/hiccup "1.0.5"]]
-  :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
   :source-paths ["src" "dev"]
   :repl-options {:init-ns user}
