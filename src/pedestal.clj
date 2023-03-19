@@ -1,25 +1,25 @@
-(ns pedestal                                                          ;; <1>
-  (:require [com.stuartsierra.component :as component]                ;; <2>
-            [io.pedestal.http :as http]))                             ;; <3>
+(ns pedestal
+  (:require [com.stuartsierra.component :as component]
+            [io.pedestal.http :as http]))
 
 (defn test?
   [service-map]
   (= :test (:env service-map)))
 
-(defrecord Pedestal [service-map                                      ;; <1>
-                     service]                                         ;; <2>
-  component/Lifecycle                                                 ;; <3>
+(defrecord Pedestal [service-map
+                     service]
+  component/Lifecycle
   (start [this]
     (if service
       this
-      (cond-> service-map                                             ;; <1>
-        true                      http/create-server                  ;; <2>
-        (not (test? service-map)) http/start                          ;; <3>
-        true                      ((partial assoc this :service)))))  ;; <4>
+      (cond-> service-map
+        true                      http/create-server
+        (not (test? service-map)) http/start
+        true                      ((partial assoc this :service)))))
   (stop [this]
-    (when (and service (not (test? service-map)))                     ;; <1>
+    (when (and service (not (test? service-map)))
       (http/stop service))
-    (assoc this :service nil)))                                       ;; <2>
+    (assoc this :service nil)))
 
 (defn new-pedestal
   []
