@@ -1,0 +1,1 @@
+{"version":3,"sources":["app/core.cljs"],"mappings":";AAEA,gBAAA,hBAAeA;AAAf,AACE,mBAAA,ZAACC","names":["app.core/init","js/console.log"],"sourcesContent":["(ns app.core)\n\n(defn ^:export init []\n  (js/console.log \"HALO 1\"))\n"]}

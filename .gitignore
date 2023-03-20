@@ -13,3 +13,12 @@ pom.xml.asc
 .hg/
 */.DS_Store
 .DS_Store
+
+# Editor
+.calva/
+.clj-kondo/
+.lsp/
+
+# package
+.shadow-cljs/
+node_modules/
