@@ -8,11 +8,11 @@
 
 (def edn-to-json
   {:name  ::edn-to-json
-   :leave (fn [context] ;;(update context :body #(generate-string %))
-            (let [response    (get context :response)
-                  update-body (update response :body #(generate-string %))
+   :leave (fn [context]
+            (let [response       (get context :response)
+                  update-body    (update response :body #(generate-string %))
                   update-context (assoc context :response update-body)
-                  _ (println "NEW CONTEXT: " update-context)]
+                  _              (println "NEW CONTEXT: " update-context)]
               update-context))})
 
 (def routes
