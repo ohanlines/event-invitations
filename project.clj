@@ -10,7 +10,7 @@
                  [com.stuartsierra/component "0.4.0"]
                  [org.slf4j/slf4j-simple "1.7.28"]
                  [com.stuartsierra/component.repl "0.2.0"]
-                 ]
+                 [cheshire "5.11.0"]]
   ;; :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
   :source-paths ["src/clj" "dev"]
