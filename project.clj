@@ -17,5 +17,7 @@
   :repl-options {:init-ns user}
   :profiles {:uberjar {:aot      :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
-             :cljs {:source-paths ["src/cljs"]
-                    :dependencies [[thheller/shadow-cljs "2.22.4"]]}})
+             :cljs    {:source-paths ["src/cljs"]
+                       :dependencies [[thheller/shadow-cljs "2.22.4"]
+                                      [cljs-ajax "0.8.4"]
+                                      [lilactown/helix "0.1.10"]]}})
