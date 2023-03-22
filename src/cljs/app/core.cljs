@@ -9,7 +9,7 @@
 
   (GET "http://localhost:8890/greet"
        {:handler (fn [response]
-                   (.log js/console response))}
+                   (js/console.log response))}
        )
 
   (js/console.log "HUHU")
