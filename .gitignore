@@ -22,3 +22,4 @@ pom.xml.asc
 # package
 .shadow-cljs/
 node_modules/
+resources/public/js
