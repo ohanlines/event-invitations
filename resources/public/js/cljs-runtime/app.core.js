@@ -1,6 +1,8 @@
 goog.provide('app.core');
 app.core.init = (function app$core$init(){
-return console.log("HALO 1");
+console.log("HALO 1");
+
+return console.log("HALO 2");
 });
 goog.exportSymbol('app.core.init', app.core.init);
 
