@@ -2,9 +2,13 @@
   (:require [io.pedestal.http.body-params :as body-params]
             [cheshire.core :refer [generate-string]]))
 
+(def coba
+  {:name "ohan"})
+
 (defn invitee-map [request]
   (let [invitee  (get-in request [:query-params :name])]
-    {:status 200 :body {:name invitee}}))
+    {:status 200 :body coba
+     :headers {"Content-Type" "application/json"}}))
 
 (def edn-to-json
   {:name  ::edn-to-json

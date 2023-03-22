@@ -9,11 +9,14 @@
   [env]
   (component/system-map
    :service-map
-   {:env          env
-    ::http/routes routes/routes
-    ::http/type   :jetty
-    ::http/port   8890
-    ::http/join?  false}
+   {:env                   env
+    ::http/routes          routes/routes
+    ::http/type            :jetty
+    ::http/port            8890
+    ::http/join?           false
+    ::http/allowed-origins {:creds           true
+                            :allowed-origins ["http://localhost:5001"]
+                            :methods         "GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS"}}
 
    :pedestal
    (component/using
