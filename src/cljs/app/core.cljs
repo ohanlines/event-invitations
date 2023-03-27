@@ -53,7 +53,7 @@
   (rfe/start!
    router
    (fn [m] (reset! match m))
-   {:use-fragment true})
+   {:use-fragment false})
   (dom/render root [current-page])
   )
 
@@ -77,5 +77,7 @@
        )
 
   (js/console.log "HUHU")
+
+  @match
 
   )
