@@ -10,6 +10,11 @@
                  [com.stuartsierra/component "0.4.0"]
                  [org.slf4j/slf4j-simple "1.7.28"]
                  [com.stuartsierra/component.repl "0.2.0"]
+                 [reagent "1.2.0"]
+                 [metosin/reitit "0.6.0"]
+                 [metosin/reitit-spec "0.6.0"]
+                 [metosin/reitit-frontend "0.6.0"]
+
                  [cheshire "5.11.0"]]
   ;; :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
@@ -18,6 +23,8 @@
   :profiles {:uberjar {:aot      :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :cljs    {:source-paths ["src/cljs"]
-                       :dependencies [[thheller/shadow-cljs "2.22.4"]
+                       :dependencies [[com.taoensso/encore "3.54.0"]
+                                      [thheller/shadow-cljs "2.22.4"]
                                       [cljs-ajax "0.8.4"]
-                                      [lilactown/helix "0.1.10"]]}})
+                                      [lilactown/helix "0.1.10"]
+                                      ]}})
