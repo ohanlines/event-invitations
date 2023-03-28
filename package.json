@@ -8,6 +8,7 @@
     "test": "test"
   },
   "scripts": {
+    "start": "npx shadow-cljs watch app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,7 +18,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-refresh": "^0.14.0",
-    "shadow-cljs": "^2.22.4",
+    "shadow-cljs": "^2.22.4"
+  },
+  "devDependencies": {
     "tailwindcss": "^3.2.7"
   }
 }

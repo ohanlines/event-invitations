@@ -1,31 +1,32 @@
 (ns app.core
   (:require [ajax.core :refer [GET]]
-            [helix.core :refer [defnc $]]
-            [helix.dom :as d]
             [reagent.core :as r]
             [reagent.dom.client :as dom]
-            [reitit.coercion.spec :as rcs]
+            [reitit.core :as rt]
             [reitit.frontend :as rf]
+            [reitit.coercion.spec :as rcs]
             [reitit.frontend.easy :as rfe]
             ))
 
 (defn home-page []
   [:div
    [:h2 "WELCOME TO HOME"]
+   [:p "test"]
    (js/console.log "HOME")])
 
-(defn about-page []
+(defn invite-page [context]
   [:div
-   [:h2 "WELCOME TO ABOUT"]
-   (js/console.log "ABOUT")])
+   (let [welcome-name (get-in context [:query-params :name])]
+     [:h2 "WELCOME " (if welcome-name welcome-name "STRANGER")])
+   ])
 
 (def routes
   [["/"
     {:name ::index
      :view home-page}]
-   ["/about"
-    {:name ::about
-     :view about-page}]])
+   ["/invite"
+    {:name ::invite
+     :view invite-page}]])
 
 (def router
   (rf/router
@@ -58,16 +59,6 @@
   )
 
 (init)
-;; (defnc app []
-;;   (d/div "COBA 123"))
-
-
-;; (defn ^:export init []
-;;   (let [root (dom/createRoot (js/document.getElementById "app"))]
-;;     (.render root ($ app))
-;;     (js/console.log "HALO 1")
-;;     (js/console.log "HALO 2"))
-;;   )
 
 (comment
 
@@ -78,6 +69,10 @@
 
   (js/console.log "HUHU")
 
+  ;; check atom changes after inserting url
   @match
+
+  ;; check router
+  (rt/match-by-path router "/invite/ohan")
 
   )
