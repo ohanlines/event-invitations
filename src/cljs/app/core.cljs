@@ -6,20 +6,17 @@
             [reitit.frontend :as rf]
             [reitit.coercion.spec :as rcs]
             [reitit.frontend.easy :as rfe]
+            [app.views.invite :refer [invite-page]]
             ))
 
 (defn home-page []
   [:div
    [:h2 "WELCOME TO HOME"]
-   [:p "test"]
+   [:p {:class-name '[text-blue-300]}
+    "coa"]
    (js/console.log "HOME")])
 
-(defn invite-page [context]
-  [:div
-   (let [welcome-name (get-in context [:query-params :name])]
-     [:h2 "WELCOME " (if welcome-name welcome-name "STRANGER")])
-   ])
-
+;; === INITIALIZE ROUTER =========================
 (def routes
   [["/"
     {:name ::index
@@ -33,21 +30,17 @@
     routes
     {:data {:coercion rcs/coercion}}))
 
-;; == ratom
+
+;; === SWITCHING PAGE USING REAGENT ATOM =========
 (defonce match (r/atom nil))
 
 (defn current-page []
   [:div
-   ;; [:ul
-   ;;  [:li [:a {:href (rfe/href ::frontpage)} "Frontpage"]]
-   ;;  [:li [:a {:href (rfe/href ::about)} "About"]]
-   ;;  ]
    (if @match
      (let [view (:view (:data @match))]
-       [view @match]))
-   ])
+       [view @match]))])
 
-;; == init
+;; === START RENDERING ===========================
 (def root (dom/create-root (.getElementById js/document "app")))
 
 (defn init []
