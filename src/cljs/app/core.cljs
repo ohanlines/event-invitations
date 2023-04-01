@@ -7,14 +7,8 @@
             [reitit.coercion.spec :as rcs]
             [reitit.frontend.easy :as rfe]
             [app.views.invite :refer [invite-page]]
+            [app.views.home :refer [home-page]]
             ))
-
-(defn home-page []
-  [:div
-   [:h2 "WELCOME TO HOME"]
-   [:p {:class-name '[text-blue-300]}
-    "coa"]
-   (js/console.log "HOME")])
 
 ;; === INITIALIZE ROUTER =========================
 (def routes
@@ -29,7 +23,6 @@
   (rf/router
     routes
     {:data {:coercion rcs/coercion}}))
-
 
 ;; === SWITCHING PAGE USING REAGENT ATOM =========
 (defonce match (r/atom nil))
@@ -53,6 +46,7 @@
 
 (init)
 
+;; ===============================================
 (comment
 
   (GET "http://localhost:8890/greet"
