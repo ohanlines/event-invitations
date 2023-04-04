@@ -30,4 +30,8 @@
   (assoc m :response {:map "baru"})
 
   m
+
+  (let [env (-> "env.edn" slurp read-string)]
+    (:test-env env))
+
   )
