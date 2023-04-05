@@ -39,8 +39,17 @@
     [:p "D-day Countdown"]]
 
    ;; === EVENT LOCATION =========================
-   [:div {:class-name "snap-start w-screen h-screen flex items-center justify-center"}
-    [:p "Event Location"]]
+   [:div {:class-name "snap-start w-screen h-screen flex flex-col items-center justify-center"}
+    [:p "Event Location"]
+    [:p "enter"]
+
+    [:iframe
+     {:src         "https://www.google.com/maps/embed/v1/view?key=AIzaSyAU5g_voBKE_tgJDgWS0P3lXBBNDgNIRdM&center=40.712776,-74.005974&zoom=12"
+      :width       "600"
+      :height      "450"
+      :frameborder "0"
+      :style       {:border "0"}}]
+    ]
 
    ;; === ATTENDANCE FORM ========================
    [:div {:class-name "snap-start w-screen h-screen flex items-center justify-center"}
