@@ -1,9 +1,15 @@
 (ns routes
   (:require [io.pedestal.http.body-params :as body-params]
-            [cheshire.core :refer [generate-string]]))
+            [cheshire.core :refer [generate-string]]
+            [env :refer [env]]))
 
 (def coba
   {:name "ohan"})
+
+(defn passing-env [request]
+  {:status  200
+   :body    {:gmaps-api-key (env :google-maps-api-key)}
+   :headers {"Content-Type" "application/json"}})
 
 (defn invitee-map [request]
   (let [invitee  (get-in request [:query-params :name])]
@@ -20,7 +26,8 @@
               update-context))})
 
 (def routes
-  #{["/greet" :get [edn-to-json invitee-map] :route-name :greet]})
+  #{["/greet" :get [edn-to-json invitee-map] :route-name :greet]
+    ["/env" :get [edn-to-json passing-env] :route-name :env]})
 
 (comment
   (def m {:response {:status 200 :body {:nama "ahmad" :umur 12}}})
@@ -33,5 +40,7 @@
 
   (let [env (-> "env.edn" slurp read-string)]
     (:test-env env))
+
+  (env :google-maps-api-key)
 
   )
