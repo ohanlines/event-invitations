@@ -20,9 +20,12 @@ pom.xml.asc
 .lsp/
 
 # package
-.shadow-cljs/
 node_modules/
+
+# compile
+.shadow-cljs/
 resources/public/js
+resources/public/css
 
 # env
 env.edn
