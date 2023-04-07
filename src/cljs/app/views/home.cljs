@@ -1,5 +1,6 @@
 (ns app.views.home
-  (:require [reagent.core :as r]
+  (:require [app.views.components :as c]
+            [reagent.core :as r]
             ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
 
 (def image-idx (r/atom 0))
@@ -42,13 +43,7 @@
    [:div {:class-name "snap-start w-screen h-screen flex flex-col items-center justify-center"}
     [:p "Event Location"]
     [:p "enter"]
-
-    [:iframe
-     {:src         "https://www.google.com/maps/embed/v1/view?key=AIzaSyAU5g_voBKE_tgJDgWS0P3lXBBNDgNIRdM&center=40.712776,-74.005974&zoom=12"
-      :width       "600"
-      :height      "450"
-      :frameborder "0"
-      :style       {:border "0"}}]
+    [c/event-location]
     ]
 
    ;; === ATTENDANCE FORM ========================
