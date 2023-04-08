@@ -20,6 +20,7 @@
   :target-path "target/%s"
   :source-paths ["src/clj" "dev"]
   :repl-options {:init-ns user}
+  :aliases {"server" ["run" "-m" "user/start"]}
   :profiles {:uberjar {:aot      :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :cljs    {:source-paths ["src/cljs"]
