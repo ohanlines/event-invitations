@@ -37,7 +37,8 @@
 
    ;; === D-DAY COUNTDOWN =======================
    [:div {:class-name "snap-start w-screen h-screen flex items-center justify-center"}
-    [:p "D-day Countdown"]]
+    [:p "D-day Countdown"]
+    [c/timer]]
 
    ;; === EVENT LOCATION =========================
    [:div {:class-name "snap-start w-screen h-screen flex flex-col items-center justify-center"}
