@@ -14,7 +14,6 @@
                  [metosin/reitit "0.6.0"]
                  [metosin/reitit-spec "0.6.0"]
                  [metosin/reitit-frontend "0.6.0"]
-
                  [cheshire "5.11.0"]]
   ;; :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
