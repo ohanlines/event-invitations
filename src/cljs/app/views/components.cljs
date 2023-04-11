@@ -1,14 +1,11 @@
 (ns app.views.components
   (:require [reagent.core :as r]
             [ajax.core :refer [GET]]
+            [clojure.string :as cs]
             ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
 
 ;; === PHOTO SESSION =============================
 (def image-idx (r/atom 0))
-
-(def images
-  (mapv #(str "/img/" % ".jpg")
-    ["img-1" "img-2" "img-3"]))
 
 (defn carousel-photo []
   (let [images (mapv #(str "/img/" % ".jpg")
@@ -68,3 +65,37 @@
       :height       "450"
       :frame-border "0"
       :style        {:border "0"}}]))
+
+;; === ATTENDEE FORM =============================
+(defn input-text
+  ([label]
+   (let [label-str   label
+         label-parse (-> label
+                         (cs/lower-case)
+                         (cs/replace #" " "-"))
+         default-map {:type       "text"
+                      :id         label-parse
+                      :name       label-parse
+                      :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
+         divv        [:div {:class-name "my-4"}]
+         labelv      [:label {:for label-parse} (str label \:)]
+         inputv      [:input default-map]]
+     (conj divv labelv inputv)))
+
+  ([label additional-map]
+   (-> (input-text label)
+       (update-in [3 1] #(merge % additional-map)))))
+
+(defn attendee-form []
+  (let []
+    [:div {:class-name "card w-1/4"
+           :on-click (fn [e]
+                       (.preventDefault e)
+                       (js/console.log "DATA: " e))}
+     [:form
+      (input-text "Nama")
+      (input-text "Jumlah yg hadir" {:type "number"})
+      [:button {:type "submit"} 
+       "Submit"]
+      ]]))
+
