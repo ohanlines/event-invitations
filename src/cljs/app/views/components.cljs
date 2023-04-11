@@ -1,92 +1,56 @@
 (ns app.views.components
   (:require [reagent.core :as r]
-            [ajax.core :refer [GET]]))
+            [ajax.core :refer [GET]]
+            ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
+
+;; === PHOTO SESSION =============================
+(def image-idx (r/atom 0))
+
+(def images
+  (mapv #(str "/img/" % ".jpg")
+    ["img-1" "img-2" "img-3"]))
+
+(defn carousel-photo []
+  (let [images (mapv #(str "/img/" % ".jpg")
+                     ["img-1" "img-2" "img-3"])]
+    [:div {:class-name "max-w-xs relative group"}
+     [:div {:class-name "rounded-lg relative overflow-hidden"}
+      [:img {:src (images @image-idx)}]]
+
+    ;; left arrow
+    (if (not= @image-idx 0)
+      [:div {:class-name "hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-full p-2 bg-black/20 cursor-pointer"
+             :on-click   #(swap! image-idx dec)}
+       [:> ChevronLeftIcon {:class-name "h-6 w-6 text-white"}]])
+
+    ;; right arrow
+    (if (not= @image-idx 2)
+      [:div {:class-name "hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-full p-2 bg-black/20 cursor-pointer"
+             :on-click   #(swap! image-idx inc)}
+       [:> ChevronRightIcon {:class-name "h-6 w-6 text-white"}]])]))
 
 ;; === D-DAY COUNTDOWN ===========================
-;; (def coba-1 (r/atom 9999999))
-;; (r/rswap)
+(def interval-ms (r/atom 0))
 
-;; (def date-now (r/atom (js/Date.)))
-;; (def date-start )
-(defonce date-interval
-  (let [date-now (js/Date.)
-        date-end (js/Date. 2023 3 10 23 59 59)
-        interval-ms (- (.getTime date-end) (.getTime date-now))]
-    (r/atom interval-ms)))
+(def interval-updater
+  (js/setInterval
+   #(reset! interval-ms
+            (let [date-now    (js/Date.)
+                  date-end    (js/Date. 2023 3 10 23 59 59)
+                  interval-ms (- (.getTime date-end) (.getTime date-now))]
+              interval-ms))
+   1000))
 
-(defonce time-updater (js/setInterval (swap! date-interval #(- % 1000)) 1000))
-
-(defn timer []
-  (let [d-day-interval    (quot @date-interval (* 1000 60 60 24))
-        d-hour-interval   (quot @date-interval (* 1000 60 60))
-        d-minute-interval (rem (quot @date-interval (* 1000 60)) 60)
-        d-second-interval (rem (quot @date-interval 1000) 60)]
-    [:div
+(defn date-timer []
+  (let [d-day-interval    (quot @interval-ms (* 1000 60 60 24))
+        d-hour-interval   (quot @interval-ms (* 1000 60 60))
+        d-minute-interval (rem (quot @interval-ms (* 1000 60)) 60)
+        d-second-interval (rem (quot @interval-ms 1000) 60)]
+    [:div {:class-name ""}
      [:p "day-interval " d-day-interval]
      [:p "hour-interval " d-hour-interval]
      [:p "minute-interval " d-minute-interval]
      [:p "second-interval " d-second-interval]]))
-
-
-;; (-> @timer)
-
-;; (js/Date. 2023 3 10 23 59 59)
-
-;; (-> (js/Date.) .toTimeString)
-
-;; month idx inc
-;; (let [d-start           @timer
-;;       d-end             (js/Date. 2023 3 11 1 0 0)
-;;       interval-ms       (- (.getTime d-end) (.getTime d-start))
-;;       d-day-interval    (quot interval-ms (* 1000 60 60 24))
-;;       d-hour-interval   (quot interval-ms (* 1000 60 60))
-;;       d-minute-interval (rem (quot interval-ms (* 1000 60)) 60)]
-;;   {:start-day       (.toTimeString d-start)
-;;    :end-day         (.toTimeString d-end)
-;;    :day-interval    d-day-interval
-;;    :hour-interval   d-hour-interval
-;;    :minute-interval d-minute-interval})
-
-;; (js/Date. "2024-01-01T00:00:00Z")
-
-;; (/ 395 60)
-
-;; (-> @timer .toTimeString)
-
-;; (-> js/Date. .toTimeString)
-
-;; (js/Date.)
-
-;; (js/Date. "2023-04-09T12:00:00Z")
-
-;; (let [date (js/Date. "2023-04-09T12:00:00Z")
-;;       local-offset (-> date .getTimezoneOffset (* -1) (* 60 1000))
-;;       local-date (js/Date. (+ (.getTime date) local-offset))]
-;;   ;; (str local-date)
-;;   (str (js/Date. (+ (.getTime date) local-offset)))
-;;   )
-
-;; (js/console.log (.-timeZone (.resolvedOptions (js/Intl.DateTimeFormat))))
-
-;; (.-timeZone (.resolvedOptions (js/Intl.DateTimeFormat)))
-
-;; (.getTimezoneOffset (js/Date.))
-
-;; (js/Date.UTC 2023 3 10 13 0 0)
-
-;; (let [date-utc    (js/Date.UTC 2023 3 10 12 0 0)
-;;       date-offset (.getTimezoneOffset (js/Date.))
-;;       calc-date   (+ date-utc (* date-offset 60 1000))]
-;;   (-> calc-date
-;;       js/Date.
-;;       .toTimeString))
-
-;; ;; Create a new Date object representing the current date and time
-;; (def now (js/Date.))
-
-;; ;; Get the timezone offset (in minutes) for the current timezone
-;; (def timezone-offset (-> now .getTimezoneOffset (/  60)))
-;; (js/console.log timezone-offset)
 
 ;; === EVENT LOCATION ============================
 (def api-key (r/atom ""))
