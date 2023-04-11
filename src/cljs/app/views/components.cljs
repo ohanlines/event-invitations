@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [ajax.core :refer [GET]]
             [clojure.string :as cs]
+            ["react" :as react]
             ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
 
 ;; === PHOTO SESSION =============================
@@ -67,35 +68,83 @@
       :style        {:border "0"}}]))
 
 ;; === ATTENDEE FORM =============================
-(defn input-text
-  ([label]
-   (let [label-str   label
-         label-parse (-> label
-                         (cs/lower-case)
-                         (cs/replace #" " "-"))
-         default-map {:type       "text"
-                      :id         label-parse
-                      :name       label-parse
-                      :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
-         divv        [:div {:class-name "my-4"}]
-         labelv      [:label {:for label-parse} (str label \:)]
-         inputv      [:input default-map]]
-     (conj divv labelv inputv)))
 
-  ([label additional-map]
-   (-> (input-text label)
-       (update-in [3 1] #(merge % additional-map)))))
+;; (defn input-text
+;;   ([label value on-change]
+;;    (let [label-str   label
+;;          label-parse (-> label
+;;                          (cs/lower-case)
+;;                          (cs/replace #" " "-"))
+;;          default-map {:type       "text"
+;;                       :id         label-parse
+;;                       :name       label-parse
+;;                       :value      (or value "")
+;;                       :on-change  on-change
+;;                       :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
+;;          divv        [:div {:class-name "my-4"}]
+;;          labelv      [:label {:for label-parse} (str label \:)]
+;;          inputv      [:input default-map]]
+;;      (conj divv labelv inputv)))
+
+;;   ([label value on-change additional-map]
+;;    (-> (input-text label value on-change)
+;;        (update-in [3 1] #(merge % additional-map)))))
+
+;; (defn attendee-form []
+;;   (let [people-name  (r/atom "")
+;;         people-count (r/atom "")]
+;;     [:div {:class-name "card w-1/4"}
+;;      [:form {:method   "POST"}
+;;       (input-text "Nama"
+;;                   @people-name
+;;                   #(swap! people-name (fn [x] (-> x .-target .-value))))
+;;       (input-text "Jumlah yg hadir"
+;;                   @people-count
+;;                   #(swap! people-count (fn [x] (-> x .-target .-value)))
+;;                   {:type "number"})
+;;       [:button {:type "submit"
+;;                 :on-click (fn [e] (.preventDefault e))}
+;;        "Submit"]
+;;       ]]))
+
+;; (defn attendee-form []
+;;   (let [people-name (r/atom "")]
+;;     [:div {:class-name "card"}
+;;      [:form {:method "POST"}
+;;       [:input {:type        "text"
+;;                :id          "name"
+;;                :value       @people-name
+;;                :on-change   #(swap! people-name (fn []
+;;                                                   (let [x (.-value (.-target %))]
+;;                                                     (js/console.log "X: " x)
+;;                                                     x)
+;;                                                   ))
+;;                :placeholder "huhu"
+;;                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
+;;       [:button {:type "submit"} "Submit"]]]))
+
+;; (defn attendee-form []
+;;   (let [[count set-count] (react/useState 0)]
+;;     (r/as-element
+;;      [:div
+;;       [:p "You clicked " count " times"]
+;;       [:button {:on-click #(set-count inc)}
+;;        "INC"]])))
 
 (defn attendee-form []
-  (let []
-    [:div {:class-name "card w-1/4"
-           :on-click (fn [e]
-                       (.preventDefault e)
-                       (js/console.log "DATA: " e))}
-     [:form
-      (input-text "Nama")
-      (input-text "Jumlah yg hadir" {:type "number"})
-      [:button {:type "submit"} 
-       "Submit"]
-      ]]))
-
+  (let [[name set-name] (react/useState "")]
+    (r/as-element
+     [:div {:class-name "card"}
+      [:form {:method    "POST"
+              :on-submit (fn [e]
+                           (.preventDefault e)
+                           (js/console.log name))}
+       [:input {:type        "text"
+                :id          "name"
+                :value       name
+                :on-change   #(set-name (fn [] (.-value (.-target %))))
+                :placeholder "huhu"
+                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
+       [:button {:type "submit"
+                 }
+        "SUBMIT"]]])))

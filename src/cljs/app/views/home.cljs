@@ -29,7 +29,7 @@
    ;; === ATTENDANCE FORM ========================
    [:div {:class-name "snap-start w-screen h-screen flex flex-col items-center justify-center"}
     [:p "Attendance Form"]
-    [c/attendee-form]]
+    [:> c/attendee-form]]
 
    ;; === COMMENT FORM AND DISPLAY ===============
    [:div {:class-name "snap-start w-screen h-screen flex items-center justify-center"}
