@@ -107,44 +107,25 @@
 ;;        "Submit"]
 ;;       ]]))
 
-;; (defn attendee-form []
-;;   (let [people-name (r/atom "")]
-;;     [:div {:class-name "card"}
-;;      [:form {:method "POST"}
-;;       [:input {:type        "text"
-;;                :id          "name"
-;;                :value       @people-name
-;;                :on-change   #(swap! people-name (fn []
-;;                                                   (let [x (.-value (.-target %))]
-;;                                                     (js/console.log "X: " x)
-;;                                                     x)
-;;                                                   ))
-;;                :placeholder "huhu"
-;;                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
-;;       [:button {:type "submit"} "Submit"]]]))
-
-;; (defn attendee-form []
-;;   (let [[count set-count] (react/useState 0)]
-;;     (r/as-element
-;;      [:div
-;;       [:p "You clicked " count " times"]
-;;       [:button {:on-click #(set-count inc)}
-;;        "INC"]])))
-
 (defn attendee-form []
-  (let [[name set-name] (react/useState "")]
+  (let [[data set-data] (react/useState {:nama "" :jumlah 0})
+        ]
     (r/as-element
      [:div {:class-name "card"}
       [:form {:method    "POST"
               :on-submit (fn [e]
                            (.preventDefault e)
-                           (js/console.log name))}
+                           (js/console.log "DATA: " data))}
        [:input {:type        "text"
                 :id          "name"
-                :value       name
-                :on-change   #(set-name (fn [] (.-value (.-target %))))
+                :value       (:nama data)
+                :on-change   #(set-data (assoc data :nama (-> % .-target .-value)))
                 :placeholder "huhu"
                 :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
-       [:button {:type "submit"
-                 }
-        "SUBMIT"]]])))
+       [:input {:type        "number"
+                :id          "jumlah"
+                :value       (:jumlah data)
+                :on-change   #(set-data (assoc data :jumlah (-> % .-target .-value)))
+                :placeholder "12"
+                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
+       [:button {:type "submit"} "SUBMIT"]]])))
