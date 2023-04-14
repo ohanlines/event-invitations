@@ -69,46 +69,28 @@
 
 ;; === ATTENDEE FORM =============================
 
-;; (defn input-text
-;;   ([label value on-change]
-;;    (let [label-str   label
-;;          label-parse (-> label
-;;                          (cs/lower-case)
-;;                          (cs/replace #" " "-"))
-;;          default-map {:type       "text"
-;;                       :id         label-parse
-;;                       :name       label-parse
-;;                       :value      (or value "")
-;;                       :on-change  on-change
-;;                       :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
-;;          divv        [:div {:class-name "my-4"}]
-;;          labelv      [:label {:for label-parse} (str label \:)]
-;;          inputv      [:input default-map]]
-;;      (conj divv labelv inputv)))
+(defn input-text
+  ([label value on-change]
+   (let [label-str   label
+         label-parse (-> label
+                         (cs/lower-case)
+                         (cs/replace #" " "-"))
+         default-map {:type       "text"
+                      :id         label-parse
+                      :value      value
+                      :on-change  on-change
+                      :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
+         divv        [:div {:class-name "my-4"}]
+         labelv      [:label {:for label-parse} (str label \:)]
+         inputv      [:input default-map]]
+     (conj divv labelv inputv)))
 
-;;   ([label value on-change additional-map]
-;;    (-> (input-text label value on-change)
-;;        (update-in [3 1] #(merge % additional-map)))))
-
-;; (defn attendee-form []
-;;   (let [people-name  (r/atom "")
-;;         people-count (r/atom "")]
-;;     [:div {:class-name "card w-1/4"}
-;;      [:form {:method   "POST"}
-;;       (input-text "Nama"
-;;                   @people-name
-;;                   #(swap! people-name (fn [x] (-> x .-target .-value))))
-;;       (input-text "Jumlah yg hadir"
-;;                   @people-count
-;;                   #(swap! people-count (fn [x] (-> x .-target .-value)))
-;;                   {:type "number"})
-;;       [:button {:type "submit"
-;;                 :on-click (fn [e] (.preventDefault e))}
-;;        "Submit"]
-;;       ]]))
+  ([label value on-change additional-map]
+   (-> (input-text label value on-change)
+       (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :jumlah 0})
+  (let [[data set-data] (react/useState {:nama "" :hadir "ya" :jumlah 0})
         ]
     (r/as-element
      [:div {:class-name "card"}
@@ -116,16 +98,25 @@
               :on-submit (fn [e]
                            (.preventDefault e)
                            (js/console.log "DATA: " data))}
-       [:input {:type        "text"
-                :id          "name"
-                :value       (:nama data)
-                :on-change   #(set-data (assoc data :nama (-> % .-target .-value)))
-                :placeholder "huhu"
-                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
-       [:input {:type        "number"
-                :id          "jumlah"
-                :value       (:jumlah data)
-                :on-change   #(set-data (assoc data :jumlah (-> % .-target .-value)))
-                :placeholder "12"
-                :class-name  "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]
+
+       ;; input nama
+       (input-text "Nama"
+                   (:nama data)
+                   #(set-data (assoc data :nama (-> % .-target .-value))))
+
+       ;; hadir selection
+       [:div {:class-name "my-4"}
+        [:label {:id "hadir"} "Apakah Anda Hadir?"]
+        [:select {:id        "hadir"
+                  :value     (:hadir data)
+                  :on-change #(set-data (assoc data :hadir (-> % .-target .-value)))
+                  :class-name "block"}
+         (for [options ["ya" "tidak"]]
+           [:option {:value options} (cs/capitalize options)])]]
+
+       ;; input yg hadir
+       (input-text "Jumlah yang Hadir"
+                   (:jumlah data)
+                   #(set-data (assoc data :jumlah (-> % .-target .-value))))
+
        [:button {:type "submit"} "SUBMIT"]]])))
