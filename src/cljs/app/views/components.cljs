@@ -79,7 +79,7 @@
                       :id         label-parse
                       :value      value
                       :on-change  on-change
-                      :class-name "block p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
+                      :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
          divv        [:div {:class-name "my-4"}]
          labelv      [:label {:for label-parse} (str label \:)]
          inputv      [:input default-map]]
@@ -93,7 +93,7 @@
   (let [[data set-data] (react/useState {:nama "" :hadir "ya" :jumlah 0})
         ]
     (r/as-element
-     [:div {:class-name "card"}
+     [:div {:class-name "card w-2/3 sm:w-1/3"}
       [:form {:method    "POST"
               :on-submit (fn [e]
                            (.preventDefault e)
@@ -107,16 +107,19 @@
        ;; hadir selection
        [:div {:class-name "my-4"}
         [:label {:id "hadir"} "Apakah Anda Hadir?"]
-        [:select {:id        "hadir"
-                  :value     (:hadir data)
-                  :on-change #(set-data (assoc data :hadir (-> % .-target .-value)))
-                  :class-name "block"}
+        [:select {:id         "hadir"
+                  :value      (:hadir data)
+                  :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
+                  :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
          (for [options ["ya" "tidak"]]
            [:option {:value options} (cs/capitalize options)])]]
 
        ;; input yg hadir
        (input-text "Jumlah yang Hadir"
                    (:jumlah data)
-                   #(set-data (assoc data :jumlah (-> % .-target .-value))))
+                   #(set-data (assoc data :jumlah (-> % .-target .-value)))
+                   {:type "number"})
 
-       [:button {:type "submit"} "SUBMIT"]]])))
+       [:button {:type       "submit"
+                 :class-name "my-4 w-full p-1 text-white rounded-md bg-pink-300 hover:bg-pink-200"}
+        "SUBMIT"]]])))
