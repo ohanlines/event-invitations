@@ -1,7 +1,7 @@
 (ns user
   (:require [clojure.tools.namespace.repl :as ns-tools]
             [com.stuartsierra.component.repl :as crepl]
-            [system]))
+            [server.system :as system]))
 
 (ns-tools/set-refresh-dirs "src" "dev")
 

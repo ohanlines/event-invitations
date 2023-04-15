@@ -1,4 +1,4 @@
-(ns pedestal
+(ns server.pedestal
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]))
 

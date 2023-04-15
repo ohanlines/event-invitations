@@ -1,4 +1,4 @@
-(ns routes
+(ns server.routes
   (:require [io.pedestal.http.body-params :as body-params]
             [cheshire.core :refer [generate-string]]
             [env :refer [env]]))

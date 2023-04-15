@@ -1,9 +1,9 @@
-(ns system
+(ns server.system
   (:require [com.stuartsierra.component :as component]
             ;; [com.stuartsierra.component.repl :refer [reset set-init start stop system]]
             [io.pedestal.http :as http]
-            [pedestal]
-            [routes]))
+            [server.pedestal :as pedestal]
+            [server.routes :as routes]))
 
 (defn new-system
   [env]
