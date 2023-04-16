@@ -58,8 +58,8 @@
                  :attend            false
                  :brought_attendees 3}])))
 
-  (insert-to-attendees "asti" true 2)
+  (insert-to-attendees "asti" "true" "2")
 
-  (show-attendees)
+  (:attendees/id ((show-attendees) 0))
 
   )
