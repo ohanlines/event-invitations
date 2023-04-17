@@ -1,6 +1,6 @@
 (ns app.views.components
   (:require [reagent.core :as r]
-            [ajax.core :refer [GET]]
+            [ajax.core :refer [GET POST]]
             [clojure.string :as cs]
             ["react" :as react]
             ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
@@ -90,14 +90,17 @@
        (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :hadir "ya" :jumlah 0})
+  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})
         ]
     (r/as-element
      [:div {:class-name "card w-2/3 sm:w-1/3"}
       [:form {:method    "POST"
               :on-submit (fn [e]
                            (.preventDefault e)
-                           (js/console.log "DATA: " data))}
+                           (js/console.log "DATA: " data)
+                           (POST "http://localhost:8890/api/insert-attendee"
+                                 {:body    (.stringify js/JSON (clj->js data))
+                                  :headers {"Content-Type" "application/json"}}))}
 
        ;; input nama
        (input-text "Nama"
@@ -111,8 +114,9 @@
                   :value      (:hadir data)
                   :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
                   :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
-         (for [options ["ya" "tidak"]]
-           [:option {:value options} (cs/capitalize options)])]]
+         [:option {:value true} "Ya"]
+         [:option {:value false} "Tidak"]
+         ]]
 
        ;; input yg hadir
        (input-text "Jumlah yang Hadir"

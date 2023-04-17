@@ -15,8 +15,9 @@
                      :attend            hadir
                      :brought_attendees jumlah}
              ]
-         {:status 200
-          :body   body
+         {:status  200
+          :headers {"Content-Type" "application/json"}
+          :body    body
           })
        (catch Exception e
          (println "ERROR: " e)
