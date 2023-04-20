@@ -100,7 +100,8 @@
                            (js/console.log "DATA: " data)
                            (POST "http://localhost:8890/api/insert-attendee"
                                  {:body    (.stringify js/JSON (clj->js data))
-                                  :headers {"Content-Type" "application/json"}}))}
+                                  :headers {"Content-Type" "application/json"}})
+                           (set-data {:nama "" :hadir true :jumlah 0}))}
 
        ;; input nama
        (input-text "Nama"
