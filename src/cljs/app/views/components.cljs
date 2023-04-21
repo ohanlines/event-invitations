@@ -35,8 +35,8 @@
    #(reset! interval-ms
             (let [date-now    (js/Date.)
                   date-end    (js/Date. 2023 3 10 23 59 59)
-                  interval-ms (- (.getTime date-end) (.getTime date-now))]
-              interval-ms))
+                  new-interval-ms (- (.getTime date-end) (.getTime date-now))]
+              new-interval-ms))
    1000))
 
 (defn date-timer []
@@ -99,8 +99,11 @@
                            (.preventDefault e)
                            (js/console.log "DATA: " data)
                            (POST "http://localhost:8890/api/insert-attendee"
-                                 {:body    (.stringify js/JSON (clj->js data))
-                                  :headers {"Content-Type" "application/json"}})
+                                 {:body          (.stringify js/JSON (clj->js data))
+                                  :headers       {"Content-Type" "application/json"}
+                                  :error-handler (fn [err]
+                                                   (let [{:keys [failure response status status-text]} err]
+                                                     (js/console.log "ERR: " response)))})
                            (set-data {:nama "" :hadir true :jumlah 0}))}
 
        ;; input nama
