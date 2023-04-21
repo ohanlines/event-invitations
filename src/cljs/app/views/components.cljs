@@ -67,8 +67,24 @@
       :frame-border "0"
       :style        {:border "0"}}]))
 
-;; === ATTENDEE FORM =============================
+;; === ERROR POP UP ==============================
+(def error-pop-up-state
+  (r/atom {:is-active false
+           :text      ""}))
 
+(defn error-pop-up [{:keys [is-active text]}]
+  (let [error-css (if is-active
+                    "opacity-100 scale-100"
+                    "opacity-0 scale-0")]
+    [:div {:class-name (str "absolute inset-0 flex justify-center items-center backdrop-filter backdrop-blur-sm z-50 transition-all" error-css)}
+     [:div {:class-name "card flex flex-col bg-red-300 text-white"}
+      [:p text]
+      [:div {:class-name "flex justify-end pt-2"}
+       [:div {:class-name "flex justify-center items-center w-20 p-2 bg-white text-black rounded-lg cursor-pointer"
+              :on-click   #(reset! error-pop-up-state {:is-active false :text ""})}
+        [:p "Tutup"]]]]]))
+
+;; === ATTENDEE FORM =============================
 (defn input-text
   ([label value on-change]
    (let [label-str   label
@@ -90,8 +106,7 @@
        (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})
-        ]
+  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})]
     (r/as-element
      [:div {:class-name "card w-2/3 sm:w-1/3"}
       [:form {:method    "POST"
@@ -103,7 +118,8 @@
                                   :headers       {"Content-Type" "application/json"}
                                   :error-handler (fn [err]
                                                    (let [{:keys [failure response status status-text]} err]
-                                                     (js/console.log "ERR: " response)))})
+                                                     (js/console.log "error map: " err)
+                                                     (reset! error-pop-up-state {:is-active true :text response})))})
                            (set-data {:nama "" :hadir true :jumlah 0}))}
 
        ;; input nama
