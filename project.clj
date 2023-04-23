@@ -24,8 +24,9 @@
                  [com.github.seancorfield/honeysql "2.4.1011"]
                  [mysql/mysql-connector-java "8.0.32"]
 
-                 ;; json
-                 [cheshire "5.11.0"]]
+                 ;; etc
+                 [cheshire "5.11.0"]
+                 [prismatic/schema "1.4.1"]]
   ;; :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
   :source-paths ["src/clj" "dev"]
