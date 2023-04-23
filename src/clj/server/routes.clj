@@ -23,7 +23,7 @@
 
 (def service-error-handler
   (error/error-dispatch [ctx ex]
-                        [{:exception-type :java.lang.AssertionError :interceptor ::ha/input-check :stage :enter}]
+                        [{:exception-type :java.lang.AssertionError}]
                         (let [{:keys [exception-type exception]} (ex-data ex)
 
                               _ (println "EX-TYPE: " exception-type)
@@ -47,7 +47,7 @@
 (def routes
   #{["/greet" :get [edn-to-json invitee-map] :route-name :greet]
     ["/env" :get [edn-to-json passing-env] :route-name :env]
-    ["/api/insert-attendee" :post (conj common-interceptor ha/input-check ha/insert-attendee) :route-name :insert-attendee]})
+    ["/api/insert-attendee" :post (conj common-interceptor ha/input-keys-check ha/input-vals-check ha/insert-attendee) :route-name :insert-attendee]})
 
 ;; ===============================================
 (comment

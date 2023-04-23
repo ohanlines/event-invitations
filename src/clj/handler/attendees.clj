@@ -1,7 +1,6 @@
 (ns handler.attendees
   (:require [db :as db]
-            [io.pedestal.http.body-params :as body-params]
-            [io.pedestal.interceptor.chain :as chain]))
+            [schema.core :as sc]))
 
 ;; === INSERT DATA TO TABLE ======================
 (defn insert-attendee [request]
@@ -23,11 +22,9 @@
          {:status 500
           :body   "Sudah ada yang menginput dengan nama ini, silahkan menggunakan nama lain"})))
 
-;; === INTERCEPTOR FOR ERROR HANDLING ============
-(def input-check
-  {:name ::input-check
-
-   ;; function for checking input keys
+;; === INTERCEPTOR FOR ERROR CHECKING ============
+(def input-keys-check
+  {:name  ::input-keys-check
    :enter (fn [context]
             (let [req      (get-in context [:request :json-params])
                   _        (println "ENTER REQ: " req)
@@ -35,11 +32,37 @@
                   ]
               (if (= req-keys [:nama :hadir :jumlah])
                 context
-                (throw (AssertionError. "Input Keys Error")))))})
+                (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, and :jumlah")))))})
+
+(def input-vals-check
+  {:name  ::input-vals-check
+   :enter (fn [context]
+            (let [req        (get-in context [:request :json-params])
+                  req-schema {:nama   (sc/pred (fn [x]
+                                                 (println x)
+                                                 (and
+                                                  (string? x)
+                                                  (not= 0 (count x)))))
+                              :hadir  sc/Bool
+                              :jumlah sc/Num}]
+              (try (sc/validate req-schema req)
+                   context
+                   (catch Exception e
+                     (println "SCHEMA ERR: " (.getMessage e))
+                     (throw (AssertionError. "Terdapat Kesalahan pada Input"))))))})
 
 ;; ===============================================
 (comment
 
   (= [:nama :hadir :jumlahh] [:nama :hadir :jumlah])
+
+  (try (sc/validate (sc/pred (fn [x]
+                               (println x)
+                               (and
+                                (string? x)
+                                (not= 0 (count x)))))
+                    "")
+       (catch Exception e
+         (println "ERR!!")))
 
   )
