@@ -21,14 +21,17 @@
     {:status 200 :body coba
      :headers {"Content-Type" "application/json"}}))
 
-;; (def service-error-handler
-;;   (error/error-dispatch [ctx ex]
-;;                         [{:exception-type :java.lang.AssertionError :interceptor ::request-input-check :stage :enter}]
-;;                         (do (println "=== START")
-;;                             (assoc ctx :response {:status 500 :body "Exception caught!"})
-;;                             (println "=== END"))
+(def service-error-handler
+  (error/error-dispatch [ctx ex]
+                        [{:exception-type :java.lang.AssertionError :interceptor ::ha/input-check :stage :enter}]
+                        (let [{:keys [exception-type exception]} (ex-data ex)
 
-;;                         :else (assoc ctx ::chain/error ex)))
+                              _ (println "EX-TYPE: " exception-type)
+                              _ (println "EX: " exception)]
+                          (assoc ctx :response {:status 500 :body (.getMessage exception)}))
+
+                        :else (assoc ctx ::chain/error ex)
+                        ))
 
 (def edn-to-json
   {:name  ::edn-to-json
@@ -36,10 +39,10 @@
             (let [response       (get context :response)
                   update-body    (update response :body #(generate-string %))
                   update-context (assoc context :response update-body)
-                  _              (println "NEW CONTEXT: " update-context)]
+                  _              (println "NEW CONTEXT (edn-to-json): " update-context)]
               update-context))})
 
-(def common-interceptor [(body-params/body-params) http/html-body edn-to-json])
+(def common-interceptor [(body-params/body-params) http/html-body edn-to-json service-error-handler])
 
 (def routes
   #{["/greet" :get [edn-to-json invitee-map] :route-name :greet]

@@ -17,8 +17,7 @@
              ]
          {:status  200
           :headers {"Content-Type" "application/json"}
-          :body    body
-          })
+          :body    body})
        (catch Exception e
          (println "ERROR: " e)
          {:status 500
@@ -36,21 +35,7 @@
                   ]
               (if (= req-keys [:nama :hadir :jumlah])
                 context
-                (throw (AssertionError. "Input Keys Error"))
-                )
-              ))
-
-   ;; error handling to show AssertionError on body HTTP still not working
-   ;; :error (fn [ctx ex]
-   ;;          (let [{:keys [exception-type exception]} (ex-data ex)
-
-   ;;                _ (println "EX-TYPE: " exception-type)
-   ;;                - (println "EX: " exception)
-   ;;                ]
-   ;;            (do (println ">>> START")
-   ;;                ;; (throw exception)
-   ;;                (println ">>> END"))))
-   })
+                (throw (AssertionError. "Input Keys Error")))))})
 
 ;; ===============================================
 (comment
