@@ -47,7 +47,7 @@
 (def routes
   #{["/greet" :get [edn-to-json invitee-map] :route-name :greet]
     ["/env" :get [edn-to-json passing-env] :route-name :env]
-    ["/api/insert-attendee" :post (conj common-interceptor ha/input-keys-check ha/input-vals-check ha/insert-attendee) :route-name :insert-attendee]})
+    ["/api/insert-attendee" :post (conj common-interceptor ha/input-schema-check ha/insert-attendee) :route-name :insert-attendee]})
 
 ;; ===============================================
 (comment

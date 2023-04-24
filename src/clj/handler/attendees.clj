@@ -1,6 +1,7 @@
 (ns handler.attendees
   (:require [db :as db]
-            [schema.core :as sc]))
+            [schema.core :as sc]
+            [clojure.string :as cs]))
 
 ;; === INSERT DATA TO TABLE ======================
 (defn insert-attendee [request]
@@ -12,8 +13,7 @@
              insert (db/insert-to-attendees nama hadir jumlah)
              body   {:name              nama
                      :attend            hadir
-                     :brought_attendees jumlah}
-             ]
+                     :brought_attendees jumlah}]
          {:status  200
           :headers {"Content-Type" "application/json"}
           :body    body})
@@ -22,39 +22,33 @@
          {:status 500
           :body   "Sudah ada yang menginput dengan nama ini, silahkan menggunakan nama lain"})))
 
-;; === INTERCEPTOR FOR ERROR CHECKING ============
-(def input-keys-check
+;; === INTERCEPTOR SCHEMA CHECKING ===============
+(sc/defschema request-schema
+  {(sc/required-key :nama)   (sc/pred (fn [x]
+                                       (println x)
+                                       (and
+                                        (string? x)
+                                        (not= 0 (count x)))))
+   (sc/required-key :hadir)  sc/Bool
+   (sc/required-key :jumlah) sc/Num})
+
+(def input-schema-check
   {:name  ::input-keys-check
    :enter (fn [context]
-            (let [req      (get-in context [:request :json-params])
-                  _        (println "ENTER REQ: " req)
-                  req-keys (vec (keys req))
-                  ]
-              (if (= req-keys [:nama :hadir :jumlah])
-                context
-                (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, and :jumlah")))))})
-
-(def input-vals-check
-  {:name  ::input-vals-check
-   :enter (fn [context]
             (let [req        (get-in context [:request :json-params])
-                  req-schema {:nama   (sc/pred (fn [x]
-                                                 (println x)
-                                                 (and
-                                                  (string? x)
-                                                  (not= 0 (count x)))))
-                              :hadir  sc/Bool
-                              :jumlah sc/Num}]
+                  _          (println "ENTER REQ: " req)
+                  req-schema request-schema]
               (try (sc/validate req-schema req)
                    context
                    (catch Exception e
-                     (println "SCHEMA ERR: " (.getMessage e))
-                     (throw (AssertionError. "Terdapat Kesalahan pada Input"))))))})
+                     (let [error e]
+                       (println "SCHEMA ERR: " (.getMessage error))
+                       (if (cs/includes? error "missing-required-key")
+                         (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, and :jumlah"))
+                         (throw (AssertionError. "Terdapat Kesalahan pada Input"))))))))})
 
 ;; ===============================================
 (comment
-
-  (= [:nama :hadir :jumlahh] [:nama :hadir :jumlah])
 
   (try (sc/validate (sc/pred (fn [x]
                                (println x)
