@@ -3,7 +3,7 @@
             [ajax.core :refer [GET POST]]
             [clojure.string :as cs]
             ["react" :as react]
-            ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon]]))
+            ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon CheckIcon]]))
 
 ;; === PHOTO SESSION =============================
 (def image-idx (r/atom 0))
@@ -106,44 +106,53 @@
        (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})]
+  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})
+        [done set-done] (react/useState false)]
     (r/as-element
-     [:div {:class-name "card w-2/3 sm:w-1/3"}
-      [:form {:method    "POST"
-              :on-submit (fn [e]
-                           (.preventDefault e)
-                           (js/console.log "DATA: " data)
-                           (POST "http://localhost:8890/api/insert-attendee"
-                                 {:body          (.stringify js/JSON (clj->js data))
-                                  :headers       {"Content-Type" "application/json"}
-                                  :error-handler (fn [err]
-                                                   (let [{:keys [failure response status status-text]} err]
-                                                     (js/console.log "error map: " err)
-                                                     (reset! error-pop-up-state {:is-active true :text response})))})
-                           (set-data {:nama "" :hadir true :jumlah 0}))}
+     (if done
+       ;; === SHOWNG CHECK ICON ==================
+       [:div {:class-name "flex justify-center items-center transition-all"}
+        [:div {:class-name "p-4 bg-green-300 rounded-full"}
+         [:> CheckIcon {:class-name "w-6 h-6 text-white"}]]]
 
-       ;; input nama
-       (input-text "Nama"
-                   (:nama data)
-                   #(set-data (assoc data :nama (-> % .-target .-value))))
+       ;; === FORM ===============================
+       [:div {:class-name "card w-2/3 sm:w-1/3"}
+        [:form {:method    "POST"
+                :on-submit (fn [e]
+                             (.preventDefault e)
+                             (js/console.log "DATA: " data)
+                             (POST "http://localhost:8890/api/insert-attendee"
+                                   {:body          (.stringify js/JSON (clj->js data))
+                                    :headers       {"Content-Type" "application/json"}
+                                    :handler       #(if % (set-done true) nil)
+                                    :error-handler (fn [err]
+                                                     (let [{:keys [failure response status status-text]} err]
+                                                       (js/console.log "error map: " err)
+                                                       (reset! error-pop-up-state {:is-active true :text response})))})
+                             (set-data {:nama "" :hadir true :jumlah 0}))}
 
-       ;; hadir selection
-       [:div {:class-name "my-4"}
-        [:label {:id "hadir"} "Apakah Anda Hadir?"]
-        [:select {:id         "hadir"
-                  :value      (:hadir data)
-                  :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
-                  :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
-         [:option {:value true} "Ya"]
-         [:option {:value false} "Tidak"]
-         ]]
+         ;; input nama
+         (input-text "Nama"
+                     (:nama data)
+                     #(set-data (assoc data :nama (-> % .-target .-value))))
 
-       ;; input yg hadir
-       (input-text "Jumlah yang Hadir"
-                   (:jumlah data)
-                   #(set-data (assoc data :jumlah (-> % .-target .-value)))
-                   {:type "number"})
+         ;; hadir selection
+         [:div {:class-name "my-4"}
+          [:label {:id "hadir"} "Apakah Anda Hadir?"]
+          [:select {:id         "hadir"
+                    :value      (:hadir data)
+                    :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
+                    :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
+           [:option {:value true} "Ya"]
+           [:option {:value false} "Tidak"]
+           ]]
 
-       [:button {:type       "submit"
-                 :class-name "my-4 w-full p-1 text-white rounded-md bg-pink-300 hover:bg-pink-200"}
-        "SUBMIT"]]])))
+         ;; input yg hadir
+         (input-text "Jumlah yang Hadir"
+                     (:jumlah data)
+                     #(set-data (assoc data :jumlah (-> % .-target .-value)))
+                     {:type "number"})
+
+         [:button {:type       "submit"
+                   :class-name "my-4 w-full p-1 text-white rounded-md bg-pink-300 hover:bg-pink-200"}
+        "SUBMIT"]]]))))
