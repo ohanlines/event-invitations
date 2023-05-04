@@ -34,7 +34,7 @@
   (js/setInterval
    #(reset! interval-ms
             (let [date-now    (js/Date.)
-                  date-end    (js/Date. 2023 3 10 23 59 59)
+                  date-end    (js/Date. 2023 3 30 23 59 59)
                   new-interval-ms (- (.getTime date-end) (.getTime date-now))]
               new-interval-ms))
    1000))

@@ -8,12 +8,13 @@
   (try (let [body (get request :json-params)
              _    (println "BODY: " request)
 
-             {:keys [nama hadir jumlah]} body
+             {:keys [nama hadir jumlah comment]} body
 
-             insert (db/insert-to-attendees nama hadir jumlah)
+             insert (db/insert-to-attendees nama hadir jumlah comment)
              body   {:name              nama
                      :attend            hadir
-                     :brought_attendees jumlah}]
+                     :brought_attendees jumlah
+                     :comment           comment}]
          {:status  200
           :headers {"Content-Type" "application/json"}
           :body    body})
@@ -24,13 +25,14 @@
 
 ;; === INTERCEPTOR SCHEMA CHECKING ===============
 (sc/defschema request-schema
-  {(sc/required-key :nama)   (sc/pred (fn [x]
-                                       (println x)
-                                       (and
-                                        (string? x)
-                                        (not= 0 (count x)))))
-   (sc/required-key :hadir)  sc/Bool
-   (sc/required-key :jumlah) sc/Num})
+  {(sc/required-key :nama)    (sc/pred (fn [x]
+                                        (println x)
+                                        (and
+                                         (string? x)
+                                         (not= 0 (count x)))))
+   (sc/required-key :hadir)   sc/Bool
+   (sc/required-key :jumlah)  sc/Num
+   (sc/required-key :comment) sc/Str})
 
 (def input-schema-check
   {:name  ::input-keys-check
@@ -44,7 +46,7 @@
                      (let [error e]
                        (println "SCHEMA ERR: " (.getMessage error))
                        (if (cs/includes? error "missing-required-key")
-                         (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, and :jumlah"))
+                         (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, :jumlah, and :comment"))
                          (throw (AssertionError. "Terdapat Kesalahan pada Input"))))))))})
 
 ;; ===============================================

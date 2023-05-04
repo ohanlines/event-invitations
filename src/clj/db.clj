@@ -23,7 +23,7 @@
     (-> (select [:*])
         (from [:attendees])))))
 
-(defn insert-to-attendees [name attend num-attend]
+(defn insert-to-attendees [name attend num-attend comment]
   (let [uuid (generate-uuid)]
     (jdbc/execute!
      my-db
@@ -32,7 +32,8 @@
           (values [{:id                uuid
                     :name              name
                     :attend            attend
-                    :brought_attendees num-attend}]))))))
+                    :brought_attendees num-attend
+                    :comment           comment}]))))))
 
 ;; ===============================================
 (comment
