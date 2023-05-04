@@ -129,7 +129,7 @@
                                                      (let [{:keys [failure response status status-text]} err]
                                                        (js/console.log "error map: " err)
                                                        (reset! error-pop-up-state {:is-active true :text response})))})
-                             (set-data {:nama "" :hadir true :jumlah 0}))}
+                             (set-data {:nama "" :hadir true :jumlah 0 :comment ""}))}
 
          ;; input nama
          (input-text "Nama"
@@ -149,7 +149,7 @@
          ;; input yg hadir
          (input-text "Jumlah yang Hadir"
                      (:jumlah data)
-                     #(set-data (assoc data :jumlah (-> % .-target .-value)))
+                     #(set-data (assoc data :jumlah (-> % .-target .-value js/parseInt)))
                      {:type "number"})
 
          ;; input comment
