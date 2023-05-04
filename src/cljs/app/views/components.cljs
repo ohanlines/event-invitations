@@ -106,7 +106,7 @@
        (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0})
+  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0 :comment ""})
         [done set-done] (react/useState false)]
     (r/as-element
      (if done
@@ -138,14 +138,13 @@
 
          ;; hadir selection
          [:div {:class-name "my-4"}
-          [:label {:id "hadir"} "Apakah Anda Hadir?"]
+          [:label {:for "hadir"} "Apakah Anda Hadir?"]
           [:select {:id         "hadir"
                     :value      (:hadir data)
                     :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
                     :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
            [:option {:value true} "Ya"]
-           [:option {:value false} "Tidak"]
-           ]]
+           [:option {:value false} "Tidak"]]]
 
          ;; input yg hadir
          (input-text "Jumlah yang Hadir"
@@ -153,6 +152,15 @@
                      #(set-data (assoc data :jumlah (-> % .-target .-value)))
                      {:type "number"})
 
+         ;; input comment
+         [:div {:class-name "my-4"}
+          [:label {:for "comment"} "Beri Ucapan"]
+          [:textarea {:id         "comment"
+                      :value      (:comment data)
+                      :on-change  #(set-data (assoc data :comment (-> % .-target .-value)))
+                      :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}]]
+
+         ;; button
          [:button {:type       "submit"
                    :class-name "my-4 w-full p-1 text-white rounded-md bg-pink-300 hover:bg-pink-200"}
         "SUBMIT"]]]))))
