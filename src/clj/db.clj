@@ -20,8 +20,16 @@
   (jdbc/execute!
    my-db
    (sql/format
-    (-> (select [:*])
-        (from [:attendees])))))
+    (-> (select :*)
+        (from :attendees)))))
+
+(defn show-comments []
+  (jdbc/execute!
+   my-db
+   (sql/format
+    (-> (select :name :comment)
+        (from :attendees)
+        (where [:<> :comment ""])))))
 
 (defn insert-to-attendees [name attend num-attend comment]
   (let [uuid (generate-uuid)]
@@ -37,30 +45,18 @@
 
 ;; ===============================================
 (comment
-  (jdbc/execute!
-   my-db
-   (let [uuid    (generate-uuid)
-         sql-str (str "insert into attendees(id, name, attend, brought_attendees) values('" uuid "', 'ohan', false, '1')")]
-     [sql-str]))
-
-  (jdbc/execute!
-   my-db
-   ["select * from attendees"])
-
-  (jdbc/execute! my-db
-                 (sql/format
-                  (-> (select [:*])
-                      (from [:attendees]))))
-
   (sql/format
-   (-> (insert-into :attendees)
-       (values [{:id                "dhy82r8b2fy"
-                 :name              "ohan"
-                 :attend            false
-                 :brought_attendees 3}])))
-
-  (insert-to-attendees "asti" "true" "2")
+   (-> (select :name)
+       (from :attendees)
+       (where [:name "is not null"])))
 
   (:attendees/id ((show-attendees) 0))
+
+  (jdbc/execute!
+   my-db
+   (sql/format
+    (-> (select :name :comment)
+        (from :attendees)
+        (where [:<> :comment ""]))))
 
   )
