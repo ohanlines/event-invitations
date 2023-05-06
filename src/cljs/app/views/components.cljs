@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [ajax.core :refer [GET POST]]
             [clojure.string :as cs]
+            [cljs.reader :as reader]
             ["react" :as react]
             ["@heroicons/react/24/solid" :refer [ChevronLeftIcon ChevronRightIcon CheckIcon]]))
 
@@ -164,3 +165,15 @@
          [:button {:type       "submit"
                    :class-name "my-4 w-full p-1 text-white rounded-md bg-pink-300 hover:bg-pink-200"}
         "SUBMIT"]]]))))
+
+;; === COMMENT DISPLAY ===========================
+(def comments-map (r/atom nil))
+
+(GET "http://localhost:8890/api/show-comments"
+     {:handler (fn [response]
+                 (let [data (-> response
+                                js/JSON.parse
+                                (js->clj :keywordize-keys true))]
+                   (reset! comments-map data)
+                   (js/console.log "GET comments: " @comments-map)))})
+
