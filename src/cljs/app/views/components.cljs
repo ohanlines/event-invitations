@@ -177,3 +177,18 @@
                    (reset! comments-map data)
                    (js/console.log "GET comments: " @comments-map)))})
 
+(def comments-map-shifter
+  (js/setInterval
+   #(reset! comments-map
+            (let [data       @comments-map
+                  first-data (vector (first data))
+                  rest-data  (rest data)]
+              (-> rest-data
+                  (concat first-data)
+                  (vec))))
+   5000))
+
+(js/console.log "change: " @comments-map)
+(defn comment-display []
+  [:div {:class-name "card"}
+   [:p (:comment (first @comments-map))]])

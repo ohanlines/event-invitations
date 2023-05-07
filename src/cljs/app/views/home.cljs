@@ -37,8 +37,9 @@
        [:> c/attendee-form]]
 
       ;; comment form and display
-      [:div {:class-name "snap-start w-screen h-screen flex items-center justify-center"}
-       [:p "Comment Form and Display"]]
+      [:div {:class-name "snap-start w-screen h-screen flex flex-col items-center justify-center"}
+       [:p "Comment Form and Display"]
+       [c/comment-display]]
 
       ]]))
 
