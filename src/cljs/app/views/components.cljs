@@ -188,7 +188,9 @@
                   (vec))))
    5000))
 
-(js/console.log "change: " @comments-map)
 (defn comment-display []
-  [:div {:class-name "card"}
-   [:p (:comment (first @comments-map))]])
+  (let [data (first @comments-map)]
+    [:div {:class-name "card w-2/3 sm:w-1/3"}
+     [:div {:class-name ""}
+      [:p (:comment data)]
+      [:p {:class-name "flex justify-end"} "- " (:nama data)]]]))
