@@ -26,7 +26,8 @@
 
                  ;; etc
                  [cheshire "5.11.0"]
-                 [prismatic/schema "1.4.1"]]
+                 [prismatic/schema "1.4.1"]
+                 [com.draines/postal "2.0.5"]]
   ;; :main ^:skip-aot event-invitations.core
   :target-path "target/%s"
   :source-paths ["src/clj" "dev"]
