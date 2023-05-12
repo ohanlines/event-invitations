@@ -1,6 +1,6 @@
 (ns server.routes
   (:require [db :as db]
-            [env :refer [env]]
+            [utils :refer [get-env]]
             [cheshire.core :refer [generate-string]]
             [handler.attendees :as ha]
             [handler.comments :as hc]
@@ -11,7 +11,7 @@
 
 (defn passing-env [request]
   {:status  200
-   :body    {:gmaps-api-key (env :google-maps-api-key)}
+   :body    {:gmaps-api-key (get-env :google-maps-api-key)}
    :headers {"Content-Type" "application/json"}})
 
 (def service-error-handler
@@ -37,7 +37,7 @@
 (def common-interceptor [(body-params/body-params) http/html-body edn-to-json service-error-handler])
 
 (def routes
-  #{["/env" :get [edn-to-json passing-env] :route-name :env]
+  #{["/api/get-env" :get [edn-to-json passing-env] :route-name :get-env]
     ["/api/insert-attendee" :post (conj common-interceptor ha/input-schema-check ha/insert-attendee) :route-name :insert-attendee]
     ["/api/show-comments" :get (conj common-interceptor hc/show-comments) :route-name :show-comments]})
 

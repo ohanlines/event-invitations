@@ -54,7 +54,7 @@
 ;; === EVENT LOCATION ============================
 (def api-key (r/atom ""))
 
-(GET "http://localhost:8890/env"
+(GET "http://localhost:8890/api/get-env"
      {:handler (fn [response]
                  (let [key-str (response "gmaps-api-key")]
                    (swap! api-key #(str key-str))))})
