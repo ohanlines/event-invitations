@@ -27,12 +27,13 @@
                  ;; etc
                  [cheshire "5.11.0"]
                  [prismatic/schema "1.4.1"]
-                 [com.draines/postal "2.0.5"]]
-  ;; :main ^:skip-aot event-invitations.core
+                 [com.draines/postal "2.0.5"]
+                 ]
+  :main ^:skip-aot user
   :target-path "target/%s"
   :source-paths ["src/clj" "dev"]
   :repl-options {:init-ns user}
-  :aliases {"server" ["run" "-m" "user/start"]}
+  :aliases {"server" ["run" "-m" "user"]}
   :profiles {:uberjar {:aot      :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :cljs    {:source-paths ["src/cljs"]
