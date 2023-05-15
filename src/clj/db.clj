@@ -1,6 +1,5 @@
 (ns db
-  (:require [env :refer [env]]
-            [utils :refer [generate-uuid]]
+  (:require [utils :refer [get-env generate-uuid]]
             [next.jdbc :as jdbc]
             [honey.sql :as sql]
             [honey.sql.helpers :refer [select from where insert-into values]]))
@@ -8,10 +7,10 @@
 ;; === DB SCHEMA =================================
 (def my-db-schema
   {:dbtype   "mysql"
-   :dbname   (env :db-name)
-   :user     (env :db-username)
-   :password (env :db-password)
-   :host     (env :db-host)})
+   :dbname   (get-env :db-name)
+   :user     (get-env :db-username)
+   :password (get-env :db-password)
+   :host     (get-env :db-host)})
 
 (def my-db (jdbc/get-datasource my-db-schema))
 
