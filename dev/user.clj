@@ -1,7 +1,8 @@
 (ns user
   (:require [clojure.tools.namespace.repl :as ns-tools]
             [com.stuartsierra.component.repl :as crepl]
-            [server.system :as system]))
+            [server.system :as system]
+            [handler.send-email :refer [print-something]]))
 
 (ns-tools/set-refresh-dirs "src" "dev")
 
@@ -21,4 +22,5 @@
   "user entry-point"
   [& args]
   (println "\nCreating your server...")
-  (start))
+  (start)
+  (print-something))

@@ -5,6 +5,8 @@
             [clojurewerkz.quartzite.triggers :as t]
             [clojurewerkz.quartzite.jobs :as j]
             [clojurewerkz.quartzite.jobs :refer [defjob]]
+            [clojurewerkz.quartzite.schedule.cron :as cron]
+            [clojurewerkz.quartzite.schedule.daily-interval :as di]
             [clojurewerkz.quartzite.schedule.simple :refer [schedule with-repeat-count with-interval-in-seconds]]))
 
 (defjob NoOpJob
@@ -22,8 +24,9 @@
         trigger (t/build
                  (t/with-identity tk)
                  (t/start-now)
-                 (t/with-schedule (schedule
-                                   (with-interval-in-seconds 1))))]
+                 (t/with-schedule (di/schedule
+                                   (di/with-interval-in-seconds 1))))]
+
     ;; submit for execution
     (qs/schedule s job trigger)))
 
