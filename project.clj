@@ -28,6 +28,7 @@
                  [cheshire "5.11.0"]
                  [prismatic/schema "1.4.1"]
                  [com.draines/postal "2.0.5"]
+                 [org.clojure/data.csv "1.0.1"]
                  [clojurewerkz/quartzite "2.1.0"]]
   :main ^:skip-aot user
   :target-path "target/%s"
