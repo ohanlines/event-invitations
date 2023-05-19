@@ -26,6 +26,7 @@ node_modules/
 .shadow-cljs/
 resources/public/js
 resources/public/css
+resources/generated-csv
 
 # env
 env.edn
