@@ -12,27 +12,32 @@
 
 ;; === PROCESSING DB TO CSV ======================
 (defn dbmap-to-vec []
-  (let [datas     (db/show-attendees)
-        col-title ["nama" "kehadiran" "jumlah orang bawaan" "ucapan"]]
-    (loop [res [col-title] data datas]
+  (let [datas (db/show-attendees)]
+    (loop [res [] data datas]
       (if (zero? (count data))
         res
         (recur (conj res (-> data first vals rest vec))
                (rest data))))))
 
-(defn write-csv []
-  (with-open [writer (io/writer "resources/out-file.csv")]
-    (csv/write-csv writer
-                   (dbmap-to-vec))))
-
-(count (db-to-csv))
-(db-to-csv)
-(write-csv)
+;; writes csv for coming and not-coming guest separately
+(defn write-csv [& {:keys [coming?]}]
+  (let [col-title     ["nama" "kehadiran" "jumlah orang bawaan" "ucapan"]
+        filtered-data (filter #(= coming? (% 1)) (dbmap-to-vec))
+        new-data      (vec (concat [col-title] filtered-data))
+        coming-flag   (case coming?
+                        true  "hadir"
+                        false "tidak-hadir")
+        file-name     (str "resources/" coming-flag ".csv")]
+    (with-open [writer (io/writer file-name)]
+      (csv/write-csv writer new-data))
+    file-name))
 
 ;; === SENDING EMAIL AUTOMATICALLY ===============
 (defjob send-email
   [ctx]
-  (try (let [{:keys [user pass to]} (get-env :auto-mailer-config)]
+  (try (let [{:keys [user pass to]} (get-env :auto-mailer-config)
+             data-hadir             (write-csv :coming? true)
+             data-tidak-hadir       (write-csv :coming? false)]
          (pc/send-message {:host "smtp-mail.outlook.com"
                            :port 587
                            :tls  true
@@ -40,8 +45,13 @@
                            :pass pass}
                           {:from    user
                            :to      to
-                           :subject "Hi!"
-                           :body    "Test"})
+                           :subject "CSV test!"
+                           :body    [{:type    "text/html"
+                                      :content "this is test of sending email with attachment"}
+                                     {:type    :attachment
+                                      :content (io/file data-hadir)}
+                                     {:type    :attachment
+                                      :content (io/file data-tidak-hadir)}]})
          (println "Email sended to: " to))
        (catch Exception e
          (println "ERROR: " (.getMessage e)))))
