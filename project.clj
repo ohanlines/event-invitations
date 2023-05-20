@@ -25,6 +25,7 @@
                  [mysql/mysql-connector-java "8.0.32"]
 
                  ;; etc
+                 [clj-pdf "2.6.3"]
                  [cheshire "5.11.0"]
                  [prismatic/schema "1.4.1"]
                  [com.draines/postal "2.0.5"]
