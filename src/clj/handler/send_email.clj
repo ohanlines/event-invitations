@@ -42,14 +42,22 @@
   (let [data (csv/read-csv filename)]
       (map #(nth % column-index) data)))
 
+;; sum attendee who say yes or no
+(defn count-attendees [filename]
+  (let [reader (io/reader filename)]
+    (->> (read-column reader 1)
+         (drop 1)
+         (count))))
+
+;; sum total attendees from present attendee
 (defn sum-attendees [filename]
   (let [reader (io/reader filename)]
     (->> (read-column reader 2)
          (drop 1)
-         (mapv #(Double/parseDouble %))
+         (mapv #(read-string %))
          (reduce + 0))))
 
-;; writes pdf for showing attendees presencea and comments, return pdf name
+;; writes pdf for showing attendees presence and comments, return pdf name
 (defn write-pdf [presence-file not-presence-file]
   (let [filter-data-by-comment (filterv #(not (empty? (% 3))) (dbmap-to-vec))
         data-name-comment      (mapv #(vector (% 0) (% 3)) filter-data-by-comment)
@@ -64,8 +72,9 @@
                                   [[:pdf-cell (data 0)]
                                    [:pdf-cell (data 1)]]))
         file-name              (str loc "attendees-stats-and-comments.pdf")
-        total-present          (sum-attendees presence-file)
-        total-not-present      (sum-attendees not-presence-file)]
+        attendee-say-yes       (count-attendees presence-file)
+        attendee-say-no        (count-attendees not-presence-file)
+        total-present          (sum-attendees presence-file)]
     (pdf [{:title         "Attendees Data"
            :author        "Ahmad Rauhan"
            :size          :a4
@@ -75,16 +84,23 @@
            :top-margin    10
            :bottom-margin 10}
 
+          ;; opening
+          [:paragraph {:align             :justified
+                       :spacing-after     10
+                       :first-line-indent 10}
+           "Pie Chart di bawah ini nunjukin persentase orang yang ngisi bakal hadir atau engga pada acara xxx label \"Hadir\" maksudnya orang itu milih select hadir di form, kalau \"Tidak Hadir\" berarti ya milih tidak hadir di form. Total dari jumlah bawaan orang yang hadir sekitar "
+           [:chunk {:color [255 135 240] :style "bold"} total-present]]
+
           ;; show percentage of attendees
           [:pdf-table {:horizontal-align :center}
            nil
            [[:pdf-cell [:chart {:type       :pie-chart
                                 :title      "Percentage of Attendees Presence"
-                                :width      300
-                                :height     300
+                                :width      200
+                                :height     200
                                 :background [255 255 255]}
-                        ["Hadir" total-present]
-                        ["Tidak Hadir" total-not-present]]]]]
+                        ["Hadir" attendee-say-yes]
+                        ["Tidak Hadir" attendee-say-no]]]]]
 
           ;; enter 5 times
           [:spacer 5]
@@ -101,7 +117,6 @@
             col-name-comment))]
          file-name)
     file-name))
-
 
 ;; === SENDING EMAIL AUTOMATICALLY ===============
 (defjob send-email
