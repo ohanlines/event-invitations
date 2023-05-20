@@ -11,6 +11,9 @@
             [clojurewerkz.quartzite.jobs :refer [defjob]]
             [clojurewerkz.quartzite.schedule.daily-interval :refer [schedule with-interval-in-seconds]]))
 
+;; pdf csv file location
+(def loc ((get-env :auto-mailer-config) :file-resource))
+
 ;; === PROCESSING DB TO CSV ======================
 (defn dbmap-to-vec []
   (let [datas (db/show-attendees)]
@@ -29,14 +32,25 @@
         coming-flag   (case coming?
                         true  "hadir"
                         false "tidak-hadir")
-        file-name     (str "resources/generated-file/" coming-flag ".csv")]
+        file-name     (str loc coming-flag ".csv")]
     (with-open [writer (io/writer file-name)]
       (csv/write-csv writer new-data))
     file-name))
 
 ;; === GENERATE CSV DATA TO PDF CHART ============
+(defn read-column [filename column-index]
+  (let [data (csv/read-csv filename)]
+      (map #(nth % column-index) data)))
+
+(defn sum-attendees [filename]
+  (let [reader (io/reader filename)]
+    (->> (read-column reader 2)
+         (drop 1)
+         (mapv #(Double/parseDouble %))
+         (reduce + 0))))
+
 ;; writes pdf for showing attendees presencea and comments, return pdf name
-(defn write-pdf []
+(defn write-pdf [presence-file not-presence-file]
   (let [filter-data-by-comment (filterv #(not (empty? (% 3))) (dbmap-to-vec))
         data-name-comment      (mapv #(vector (% 0) (% 3)) filter-data-by-comment)
         col-header             (vector
@@ -49,7 +63,9 @@
                                 (for [data data-name-comment]
                                   [[:pdf-cell (data 0)]
                                    [:pdf-cell (data 1)]]))
-        file-name              "resources/generated-file/attendees-stats-and-comments.pdf"]
+        file-name              (str loc "attendees-stats-and-comments.pdf")
+        total-present          (sum-attendees presence-file)
+        total-not-present      (sum-attendees not-presence-file)]
     (pdf [{:title         "Attendees Data"
            :author        "Ahmad Rauhan"
            :size          :a4
@@ -67,8 +83,8 @@
                                 :width      300
                                 :height     300
                                 :background [255 255 255]}
-                        ["One" 12]
-                        ["Two" 33]]]]]
+                        ["Hadir" total-present]
+                        ["Tidak Hadir" total-not-present]]]]]
 
           ;; enter 5 times
           [:spacer 5]
@@ -86,13 +102,16 @@
          file-name)
     file-name))
 
+
 ;; === SENDING EMAIL AUTOMATICALLY ===============
 (defjob send-email
   [ctx]
   (try (let [{:keys [user pass to]} (get-env :auto-mailer-config)
-             pdf-kehadiran          (write-pdf)
-             data-hadir             (write-csv :coming? true)
-             data-tidak-hadir       (write-csv :coming? false)]
+             data-present           (write-csv :coming? true)
+             data-not-present       (write-csv :coming? false)
+             pdf-presence           (write-pdf
+                                     (str loc "hadir.csv")
+                                     (str loc "tidak-hadir.csv"))]
          (pc/send-message {:host "smtp-mail.outlook.com"
                            :port 587
                            :tls  true
@@ -104,11 +123,11 @@
                            :body    [{:type    "text/html"
                                       :content "this is test of sending email with attachment"}
                                      {:type    :attachment
-                                      :content (io/file pdf-kehadiran)}
+                                      :content (io/file pdf-presence)}
                                      {:type    :attachment
-                                      :content (io/file data-hadir)}
+                                      :content (io/file data-present)}
                                      {:type    :attachment
-                                      :content (io/file data-tidak-hadir)}]})
+                                      :content (io/file data-not-present)}]})
          (println "Email sended to: " to))
        (catch Exception e
          (println "ERROR: " (.getMessage e)))))
@@ -147,5 +166,7 @@
                  [["abc"]
                   ["ghi" "jkl"]
                   [123 12321321]]))
+
+(sum-attendees "resources/generated-file/hadir.csv")
 
   )
