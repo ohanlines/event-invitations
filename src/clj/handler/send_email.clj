@@ -28,41 +28,68 @@
         coming-flag   (case coming?
                         true  "hadir"
                         false "tidak-hadir")
-        file-name     (str "resources/generated-file" coming-flag ".csv")]
+        file-name     (str "resources/generated-file/" coming-flag ".csv")]
     (with-open [writer (io/writer file-name)]
       (csv/write-csv writer new-data))
     file-name))
 
 ;; === GENERATE CSV DATA TO PDF CHART ============
+;; writes pdf for showing attendees presencea and comments, return pdf name
 (defn write-pdf []
-  (let []
+  (let [filter-data-by-comment (filterv #(not (empty? (% 3))) (dbmap-to-vec))
+        data-name-comment      (mapv #(vector (% 0) (% 3)) filter-data-by-comment)
+        col-header             (vector
+                                (mapv
+                                 #(vector :pdf-cell
+                                          {:background-color [255 135 240]}
+                                          [:chunk {:style "bold"} %])
+                                 ["Name" "Comment"]))
+        col-name-comment       (vec
+                                (for [data data-name-comment]
+                                  [[:pdf-cell (data 0)]
+                                   [:pdf-cell (data 1)]]))
+        file-name              "resources/generated-file/attendees-stats-and-comments.pdf"]
     (pdf [{:title         "Attendees Data"
            :author        "Ahmad Rauhan"
            :size          :a4
            :orientation   :portrait
-           :left-margin   10
-           :right-margin  10
+           :left-margin   20
+           :right-margin  20
            :top-margin    10
            :bottom-margin 10}
+
+          ;; show percentage of attendees
           [:pdf-table {:horizontal-align :center}
            nil
            [[:pdf-cell [:chart {:type       :pie-chart
-                                :title      "Percentage of Attendees"
+                                :title      "Percentage of Attendees Presence"
                                 :width      300
                                 :height     300
                                 :background [255 255 255]}
                         ["One" 12]
-                        ["Two" 33]]]]
-           [[:pdf-cell
-             [:pdf-table {:width-percent 100}
-              [20 80]
-              [[:pdf-cell {:set-border [:right]} "Nama"] [:pdf-cell {:set-border []} "Ucapan"]]]]]]]
-         "resources/generated-file/pdf-example.pdf")))
+                        ["Two" 33]]]]]
+
+          ;; enter 5 times
+          [:spacer 5]
+
+          ;; comments from attendees table
+          [:chunk {:style "bold"
+                   :size  16}
+           "Comments from attendees"]
+          (vec
+           (concat
+            [:pdf-table {:width-percent 100}
+             [20 80]]
+            col-header
+            col-name-comment))]
+         file-name)
+    file-name))
 
 ;; === SENDING EMAIL AUTOMATICALLY ===============
 (defjob send-email
   [ctx]
   (try (let [{:keys [user pass to]} (get-env :auto-mailer-config)
+             pdf-kehadiran          (write-pdf)
              data-hadir             (write-csv :coming? true)
              data-tidak-hadir       (write-csv :coming? false)]
          (pc/send-message {:host "smtp-mail.outlook.com"
@@ -75,6 +102,8 @@
                            :subject "CSV test!"
                            :body    [{:type    "text/html"
                                       :content "this is test of sending email with attachment"}
+                                     {:type    :attachment
+                                      :content (io/file pdf-kehadiran)}
                                      {:type    :attachment
                                       :content (io/file data-hadir)}
                                      {:type    :attachment
