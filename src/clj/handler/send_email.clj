@@ -22,9 +22,10 @@
 
 ;; writes csv for coming and not-coming guest separately return csv name
 (defn write-csv [& {:keys [coming?]}]
-  (let [col-title     ["nama" "kehadiran" "jumlah orang bawaan" "ucapan"]
+  (let [col-title     ["nama" "kehadiran" "jumlah orang bawaan"]
         filtered-data (filter #(= coming? (% 1)) (dbmap-to-vec))
-        new-data      (vec (concat [col-title] filtered-data))
+        butlast-data  (mapv butlast filtered-data)
+        new-data      (vec (concat [col-title] butlast-data))
         coming-flag   (case coming?
                         true  "hadir"
                         false "tidak-hadir")
@@ -141,9 +142,10 @@
                       :subject "Hi!"
                       :body    "Test"}))
 
-(with-open [writer (io/writer "resources/out-file.csv")]
+(with-open [writer (io/writer "resources/generated-file/out-file.csv")]
   (csv/write-csv writer
-                 [["abc" "def"]
-                  ["ghi" "jkl"]]))
+                 [["abc"]
+                  ["ghi" "jkl"]
+                  [123 12321321]]))
 
   )
