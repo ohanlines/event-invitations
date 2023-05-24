@@ -142,7 +142,7 @@
           [:label {:for "hadir"} "Apakah Anda Hadir?"]
           [:select {:id         "hadir"
                     :value      (:hadir data)
-                    :on-change  #(set-data (assoc data :hadir (-> % .-target .-value)))
+                    :on-change  #(set-data (assoc data :hadir (-> % .-target .-value reader/read-string)))
                     :class-name "block w-full p-1 border-2 border-pink-200 rounded-md focus:outline-none"}
            [:option {:value true} "Ya"]
            [:option {:value false} "Tidak"]]]
