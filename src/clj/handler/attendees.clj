@@ -39,17 +39,20 @@
    :enter (fn [context]
             (let [req        (get-in context [:request :json-params])
                   _          (println "ENTER REQ: " req)
+                  cond1      (and (false? (:hadir req)) (not (zero? (:jumlah req))))
+                  cond2      (and (true? (:hadir req)) (zero? (:jumlah req)))
                   req-schema request-schema]
-              (if (and (false? (:hadir req)) (not (zero? (:jumlah req))))
-                (throw (AssertionError. "Tidak Bisa Mengisi 'Jumlah Hadir' bila Anda Tidak Hadir"))
-                (try (sc/validate req-schema req)
-                     context
-                     (catch Exception e
-                       (let [error e]
-                         (println "SCHEMA ERR: " (.getMessage error))
-                         (if (cs/includes? error "missing-required-key")
-                           (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, :jumlah, and :comment"))
-                           (throw (AssertionError. "Terdapat Kesalahan pada Format Input")))))))))})
+              (cond
+                cond1 (throw (AssertionError. "Tidak Bisa Mengisi 'Jumlah Hadir' bila Anda Tidak Hadir"))
+                cond2 (throw (AssertionError. "Bila Anda Hadir 'Jumlah Hadir' Tidak Bisa 0"))
+                :else (try (sc/validate req-schema req)
+                           context
+                           (catch Exception e
+                             (let [error e]
+                               (println "SCHEMA ERR: " (.getMessage error))
+                               (if (cs/includes? error "missing-required-key")
+                                 (throw (AssertionError. "Input Keys Error, keys must be :nama, :hadir, :jumlah, and :comment"))
+                                 (throw (AssertionError. "Terdapat Kesalahan pada Format Input")))))))))})
 
 ;; ===============================================
 (comment
