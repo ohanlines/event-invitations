@@ -107,7 +107,7 @@
        (update-in [3 1] #(merge % additional-map)))))
 
 (defn attendee-form []
-  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 0 :comment ""})
+  (let [[data set-data] (react/useState {:nama "" :hadir true :jumlah 1 :comment ""})
         [done set-done] (react/useState false)]
     (r/as-element
      (if done
@@ -130,7 +130,7 @@
                                                      (let [{:keys [failure response status status-text]} err]
                                                        (js/console.log "error map: " err)
                                                        (reset! error-pop-up-state {:is-active true :text response})))})
-                             (set-data {:nama "" :hadir true :jumlah 0 :comment ""}))}
+                             (set-data {:nama "" :hadir true :jumlah 1 :comment ""}))}
 
          ;; input nama
          (input-text "Nama"
