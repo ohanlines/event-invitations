@@ -31,14 +31,15 @@
 ;; === D-DAY COUNTDOWN ===========================
 (def interval-ms (r/atom 0))
 
-(def interval-updater
-  (js/setInterval
-   #(reset! interval-ms
-            (let [date-now    (js/Date.)
-                  date-end    (js/Date. 2023 3 30 23 59 59)
-                  new-interval-ms (- (.getTime date-end) (.getTime date-now))]
-              new-interval-ms))
-   1000))
+;; set timer, changing every second
+(js/setInterval
+ #(let [date-now        (js/Date.)
+        date-end        (js/Date. 2023 4 30 00 00 00)
+        new-interval-ms (- (.getTime date-end) (.getTime date-now))]
+    (if (<= new-interval-ms 0)
+      (js/clearInterval interval-ms)
+      (reset! interval-ms new-interval-ms)))
+ 1000)
 
 (defn date-timer []
   (let [d-day-interval    (quot @interval-ms (* 1000 60 60 24))
