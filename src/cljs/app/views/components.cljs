@@ -34,23 +34,28 @@
 ;; set timer, changing every second
 (js/setInterval
  #(let [date-now        (js/Date.)
-        date-end        (js/Date. 2023 4 30 00 00 00)
+        date-end        (js/Date. 2023 4 31 00 00 00)
         new-interval-ms (- (.getTime date-end) (.getTime date-now))]
     (if (<= new-interval-ms 0)
       (js/clearInterval interval-ms)
       (reset! interval-ms new-interval-ms)))
  1000)
 
+(defn timer-styling [label value]
+  [:div {:class-name "flex flex-col card items-center bg-purple-400 mx-2"}
+   [:p {:class-name "sans text-white text-2xl"} value]
+   [:p {:class-name "sans text-white"} label]])
+
 (defn date-timer []
   (let [d-day-interval    (quot @interval-ms (* 1000 60 60 24))
         d-hour-interval   (quot @interval-ms (* 1000 60 60))
         d-minute-interval (rem (quot @interval-ms (* 1000 60)) 60)
         d-second-interval (rem (quot @interval-ms 1000) 60)]
-    [:div {:class-name ""}
-     [:p "day-interval " d-day-interval]
-     [:p "hour-interval " d-hour-interval]
-     [:p "minute-interval " d-minute-interval]
-     [:p "second-interval " d-second-interval]]))
+    [:div {:class-name "flex"}
+     (timer-styling "Days" d-day-interval)
+     (timer-styling "Hours" d-hour-interval)
+     (timer-styling "Minutes" d-minute-interval)
+     (timer-styling "Seconds" d-second-interval)]))
 
 ;; === EVENT LOCATION ============================
 (def api-key (r/atom ""))
@@ -178,8 +183,8 @@
                    (reset! comments-map data)
                    (js/console.log "GET comments: " @comments-map)))})
 
-(def comments-map-shifter
-  (js/setInterval
+;; comments shifter
+(js/setInterval
    #(reset! comments-map
             (let [data       @comments-map
                   first-data (vector (first data))
@@ -187,7 +192,7 @@
               (-> rest-data
                   (concat first-data)
                   (vec))))
-   5000))
+   5000)
 
 (defn comment-display []
   (let [data (first @comments-map)]
