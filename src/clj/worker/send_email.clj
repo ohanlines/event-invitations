@@ -1,4 +1,4 @@
-(ns handler.send-email
+(ns worker.send-email
   (:require [db :as db]
             [postal.core :as pc]
             [utils :refer [get-env]]
@@ -9,7 +9,7 @@
             [clojurewerkz.quartzite.triggers :as t]
             [clojurewerkz.quartzite.jobs :as j]
             [clojurewerkz.quartzite.jobs :refer [defjob]]
-            [clojurewerkz.quartzite.schedule.daily-interval :refer [schedule with-interval-in-seconds]]))
+            [clojurewerkz.quartzite.schedule.cron :refer [schedule daily-at-hour-and-minute]]))
 
 ;; pdf csv file location
 (def loc ((get-env :auto-mailer-config) :file-resource))
@@ -158,7 +158,7 @@
                  (t/with-identity (t/key "triggers.1"))
                  (t/start-now)
                  (t/with-schedule (schedule
-                                   (with-interval-in-seconds 10))))]
+                                   (daily-at-hour-and-minute 9 0))))]
 
     ;; submit for execution
     (qs/schedule s job trigger)))
