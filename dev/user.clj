@@ -2,7 +2,7 @@
   (:require [clojure.tools.namespace.repl :as ns-tools]
             [com.stuartsierra.component.repl :as crepl]
             [server.system :as system]
-            [handler.send-email :refer [email-scheduler]]))
+            [worker.send-email :refer [email-scheduler]]))
 
 (ns-tools/set-refresh-dirs "src" "dev")
 
