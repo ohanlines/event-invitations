@@ -8,9 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "start:dev": "npx shadow-cljs watch app",
-    "server:dev": "lein server",
-    "tailwind:dev": "npx tailwindcss -i global.css -o ./resources/public/css/output.css --watch",
+    "start": "npx shadow-cljs watch app",
+    "server": "lein server",
+    "tailwind": "npx tailwindcss -i global.css -o ./resources/public/css/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
